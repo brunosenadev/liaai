@@ -4,3 +4,4 @@ transformers
 huggingface-hub
 aiofiles
 dotenv
+python-multipart

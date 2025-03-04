@@ -5,3 +5,4 @@ huggingface-hub
 aiofiles
 dotenv
 python-multipart
+sentencepiece

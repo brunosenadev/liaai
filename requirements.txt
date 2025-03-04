@@ -6,3 +6,6 @@ aiofiles
 dotenv
 python-multipart
 sentencepiece
+sacremoses
+torch
+tensorflow

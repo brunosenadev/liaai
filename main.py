@@ -4,9 +4,13 @@ from transformers import MarianMTModel, MarianTokenizer
 from fastapi.middleware.cors import CORSMiddleware
 from huggingface_hub import login
 from io import BytesIO
+from dotenv import load_dotenv 
 import uvicorn
+import os
 
-HUGGING_FACE_TOKEN = "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"
+load_dotenv()
+
+HUGGING_FACE_TOKEN = os.getenv("HUGGING_FACE_TOKEN")
 login(token=HUGGING_FACE_TOKEN)
 
 app = FastAPI()

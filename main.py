@@ -104,5 +104,9 @@ async def translate_archive(
         "Content-Disposition": f"attachment; filename=traduzido_{file.filename}"
     })
 
+@app.get("/")
+async def read_root():
+    return {"message": "Bem vindo"}
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

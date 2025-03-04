@@ -18,9 +18,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://liaai-frontend.vercel.app"], 
-    allow_methods=["*"], 
-    allow_headers=["*"], 
+    allow_origins=["*"],  # Permitir todas as origens temporariamente
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 LANGS_LIST = ["pt", "pt-pt", "es", "fr", "it", "ro", "ca", "gl", "en"]
@@ -109,4 +110,4 @@ async def read_root():
     return {"message": "Bem vindo"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=10000)

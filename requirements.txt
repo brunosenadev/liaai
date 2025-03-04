@@ -3,3 +3,4 @@ uvicorn
 transformers
 huggingface-hub
 aiofiles
+dotenv

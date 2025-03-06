@@ -18,41 +18,77 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir todas as origens temporariamente
+    allow_origins=["https://liaai-frontend.vercel.app"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-LANGS_LIST = ["pt", "pt-pt", "es", "fr", "it", "ro", "ca", "gl", "en"]
+LANGS_LIST = ["pt", "pt-pt", "ro", "ca", "gl", "en"]
 
 LANGS_LIST_DIFFERENT_MODEL = {
     "hu": {
-        "en": "Helsinki-NLP/opus-mt-hu-en",
-        "pt": "Helsinki-NLP/opus-mt-hu-ROMANCE"
+        "en": "Helsinki-NLP/opus-mt-en-hu"
     },
     "de": {
-        "en": "Helsinki-NLP/opus-mt-de-en",
-        "pt": "Helsinki-NLP/opus-mt-de-ROMANCE"
+        "en": "Helsinki-NLP/opus-mt-en-de"
     },
     "ja": {
-        "en": "Helsinki-NLP/opus-mt-ja-en"
+        "en": "Helsinki-NLP/opus-mt-en-jap"
     },
     "zh": {
-        "en": "Helsinki-NLP/opus-mt-zh-en"
-    }
+        "en": "Helsinki-NLP/opus-mt-en-zh"
+    }, 
+    "es": {
+        "en": "Helsinki-NLP/opus-mt-en-es"
+    },
+    "fr": {
+        "en": "Helsinki-NLP/opus-mt-en-fr"
+    },
+    "it": {
+        "en": "Helsinki-NLP/opus-mt-en-it"
+    },
 }
 
-def translate(text, src_lang="pt", tgt_lang="en"):
+def translate(text, src_lang="pt", tgt_lang="hu"):
     if src_lang == tgt_lang:
-        return text  
+        return text
+    
+    if src_lang == "pt" and tgt_lang == "pt-pt":
+        return text
+
+    if src_lang == "pt" and tgt_lang == "hu":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="hu")
+    
+    if src_lang == "pt" and tgt_lang == "es":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="es")
+    
+    if src_lang == "pt" and tgt_lang == "fr":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="fr")
+    
+    if src_lang == "pt" and tgt_lang == "it":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="it")
+    
+    if src_lang == "pt" and tgt_lang == "de":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="de")
+    
+    if src_lang == "pt" and tgt_lang == "ja":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="ja")
+    
+    if src_lang == "pt" and tgt_lang == "zh":
+        text_in_english = translate(text, src_lang="pt", tgt_lang="en")
+        return translate(text_in_english, src_lang="en", tgt_lang="zh")
 
     if src_lang in LANGS_LIST and tgt_lang in LANGS_LIST:
         model_name = f"Helsinki-NLP/opus-mt-ROMANCE-{tgt_lang}"
 
     elif src_lang in LANGS_LIST and tgt_lang in LANGS_LIST_DIFFERENT_MODEL:
-        if "pt" in tgt_lang: 
-            tgt_lang = "pt"
         model_name = LANGS_LIST_DIFFERENT_MODEL[tgt_lang].get(src_lang)
         if not model_name:
             raise ValueError(f"Tradução de {src_lang} para {tgt_lang} não é suportada.")
@@ -67,13 +103,13 @@ def translate(text, src_lang="pt", tgt_lang="en"):
 
     else:
         raise ValueError(f"Tradução de {src_lang} para {tgt_lang} não é suportada.")
-    
+
     tokenizer = MarianTokenizer.from_pretrained(model_name)
     model = MarianMTModel.from_pretrained(model_name)
 
     tokens = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
-    translate = model.generate(**tokens)
-    return tokenizer.batch_decode(translate, skip_special_tokens=True)[0]
+    translated = model.generate(**tokens)
+    return tokenizer.batch_decode(translated, skip_special_tokens=True)[0]
 
 @app.post("/traduzir-arquivo/")
 async def translate_archive(
